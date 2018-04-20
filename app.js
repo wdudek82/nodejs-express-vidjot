@@ -1,7 +1,13 @@
 const express = require('express');
 const exphbs = require('express-handlebars');
+const mongoose = require('mongoose');
 
 const app = express();
+
+// Connect to mongoose
+mongoose.connect('mongodb://localhost/vidjot-dev')
+  .then(() => console.log('MongoDB Connected...'))
+  .catch((err) => console.log(err));
 
 // Handlebars Middleware
 app.engine('handlebars', exphbs({
@@ -27,10 +33,10 @@ app.get('/', (req, res) => {
 
 // About route
 app.get('/about', (req, res) => {
-  res.send('<h1>About</h1>');
+  res.render('about');
 });
 
 // Projects route
 app.get('/projects', (req, res) => {
-  res.send(`<h1>Projects</h1>`);
+  res.render('projects');
 });
