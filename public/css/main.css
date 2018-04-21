@@ -1,0 +1,13 @@
+.login-logo {
+  width: 130px;
+  margin: auto;
+}
+
+.buttons {
+  display: flex;
+  justify-content: space-between;
+}
+
+.buttons .btn {
+  /* width: 100%; */
+}
