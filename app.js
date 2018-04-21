@@ -10,6 +10,14 @@ const app = express();
 
 
 ///////////////////////////////
+// Routing
+//////////////////////////////
+const mainRoutes = require('./routes/main');
+const ideasRoutes = require('./routes/ideas');
+const usersRoutes = require('./routes/users');
+
+
+///////////////////////////////
 // Database
 //////////////////////////////
 
@@ -41,6 +49,7 @@ app.use(session({
   secret: '[#<wip4u1z;af~rmWd3w',
   resave: true,
   saveUninitiated: true,
+  saveUninitialized: true,
   // cookie: { secure: true }
 }));
 
@@ -55,125 +64,10 @@ app.use((req, res, next) => {
   next();
 });
 
-
-///////////////////////////////
-// Models
-//////////////////////////////
-
-// Load Idea Model
-require('./models/Idea');
-const Idea = mongoose.model('ideas');
-
-
-///////////////////////////////
-// Routing
-//////////////////////////////
-
-// Index route
-app.get('/', (req, res) => {
-  const context = {
-    title: 'Welcome',
-    name: 'Neevor'
-  }
-
-  res.render('index', context);
-});
-
-// Projects route
-app.get('/projects', (req, res) => {
-  res.render('projects');
-});
-
-// About route
-app.get('/about', (req, res) => {
-  res.render('about');
-});
-
-// Idea Index Page
-app.get('/ideas', (req, res) => {
-  Idea.find({})
-    .sort({date: 'desc'})
-    .then(ideas => {
-      res.render('ideas/index', {
-        ideas: ideas
-      });
-    });
-});
-
-// Add Idea
-app.get('/ideas/add', (req, res) => {
-  res.render('ideas/add');
-});
-
-// Edit Idea Form
-app.get('/ideas/edit/:id', (req, res) => {
-  Idea.findOne({_id: req.params.id})
-    .then(idea => {
-      res.render('ideas/edit', {
-        idea: idea
-    });
-  });
-});
-
-// Process Form
-app.post('/ideas/', (req, res) => {
-  const title = req.body.title;
-  const details = req.body.details;
-  const errors = [];
-
-  if (!title) {
-    errors.push({text: 'Please add a title'});
-  }
-  if (!details) {
-    errors.push({text: 'Please add some details'});
-  }
-
-  if (errors.length > 0) {
-    res.render('ideas/add', {
-      errors: errors,
-      title: title,
-      details: details
-    });
-  } else {
-    const newUser = {
-      title: title,
-      details: details
-    };
-    new Idea(newUser)
-      .save()
-      .then(idea => {
-        req.flash('success_msg', 'Video idea added!')
-        res.redirect('/ideas');
-      });
-  }
-});
-
-// Edit Form process
-app.put('/ideas/:id', (req, res) => {
-  Idea.findOne({
-    _id: req.params.id
-  })
-  .then(idea => {
-    // new values
-    idea.title = req.body.title;
-    idea.details = req.body.details;
-
-    idea.save()
-      .then(() => { 
-        req.flash('success_msg', 'Idea edited successfully!');
-        res.redirect('/ideas');
-      });
-  });
-});
-
-// Delete Idea
-app.delete('/ideas/:id', (req, res) => {
-  Idea.remove({_id: req.params.id})
-    .then(() => {
-      req.flash('success_msg', 'Video idea removed!');
-      res.redirect('/ideas');
-    });
-});
+// Use routes
+app.use('/', mainRoutes);
+app.use('/ideas', ideasRoutes);
+app.use('/users', usersRoutes);
 
 
 ///////////////////////////////
