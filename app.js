@@ -1,5 +1,6 @@
 const express = require('express');
 const exphbs = require('express-handlebars');
+const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 
 const app = express();
@@ -18,6 +19,10 @@ app.engine('handlebars', exphbs({
   defaultLayout: 'main'
 }));
 app.set('view engine', 'handlebars');
+
+// Body parser middleware
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json());
 
 // Index route
 app.get('/', (req, res) => {
@@ -41,12 +46,19 @@ app.get('/projects', (req, res) => {
 
 // Idea Form
 app.get('/ideas/add', (req, res) => {
+  // console.log(req);
   res.render('ideas/add');
 });
 
-// Ideas List
-app.get('/ideas', (req, res) => {
-  res.render('ideas');
+// Process Form
+app.post('/ideas/', (req, res) => {
+  const title = req.body.title;
+  const details = req.body.details;
+
+  res.render('ideas/index', {
+    title: title,
+    details: details
+  });
 });
 
 // Server
