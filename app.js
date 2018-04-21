@@ -1,8 +1,10 @@
 const express = require('express');
+const session = require('express-session');
 const exphbs = require('express-handlebars');
+const methodOverride = require('method-override');
+const flash = require('connect-flash');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
-const methodOverride = require('method-override');
 
 const app = express();
 
@@ -34,6 +36,25 @@ app.use(bodyParser.json());
 // Method override middleware
 app.use(methodOverride('_method'));
 
+// Express session middleware
+app.use(session({
+  secret: '[#<wip4u1z;af~rmWd3w',
+  resave: true,
+  saveUninitiated: true,
+  // cookie: { secure: true }
+}));
+
+// Connect flash middleware
+app.use(flash());
+
+// Global variables
+app.use((req, res, next) => {
+  res.locals.success_msg = req.flash('success_msg');
+  res.locals.error_msg = req.flash('error_msg');
+  res.locals.error = req.flash('error');
+  next();
+});
+
 
 ///////////////////////////////
 // Models
@@ -42,7 +63,7 @@ app.use(methodOverride('_method'));
 // Load Idea Model
 require('./models/Idea');
 const Idea = mongoose.model('ideas');
-// Idea.remove({}, () => console.log('All Ideas deleted!'));
+
 
 ///////////////////////////////
 // Routing
@@ -121,6 +142,7 @@ app.post('/ideas/', (req, res) => {
     new Idea(newUser)
       .save()
       .then(idea => {
+        req.flash('success_msg', 'Video idea added!')
         res.redirect('/ideas');
       });
   }
@@ -137,7 +159,8 @@ app.put('/ideas/:id', (req, res) => {
     idea.details = req.body.details;
 
     idea.save()
-      .then(() => {
+      .then(() => { 
+        req.flash('success_msg', 'Idea edited successfully!');
         res.redirect('/ideas');
       });
   });
@@ -147,9 +170,11 @@ app.put('/ideas/:id', (req, res) => {
 app.delete('/ideas/:id', (req, res) => {
   Idea.remove({_id: req.params.id})
     .then(() => {
+      req.flash('success_msg', 'Video idea removed!');
       res.redirect('/ideas');
     });
 });
+
 
 ///////////////////////////////
 // Server
