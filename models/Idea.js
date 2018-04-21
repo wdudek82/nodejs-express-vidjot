@@ -5,7 +5,8 @@ const Schema = mongoose.Schema;
 const IdeaSchema = new Schema({
   title: {
     type: String,
-    required: true
+    required: true,
+    // unique: true
   },
   details: {
     type: String,
