@@ -5,14 +5,14 @@ const Schema = mongoose.Schema;
 const UserSchema = new Schema({
   name: {
     type: String,
-    requires: true
+    required: true
   },
   email: {
     type: String,
     required: true
   },
   password: {
-    type: '',
+    type: String,
     required: true
   },
   date: {

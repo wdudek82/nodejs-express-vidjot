@@ -53,11 +53,11 @@ router.post('/', (req, res) => {
       details: details
     });
   } else {
-    const newUser = {
+    const newIdea = {
       title: title,
       details: details
     };
-    new Idea(newUser)
+    new Idea(newIdea)
       .save()
       .then(idea => {
         req.flash('success_msg', 'Video idea added!')
