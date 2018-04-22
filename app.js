@@ -5,6 +5,7 @@ const exphbs = require('express-handlebars');
 const methodOverride = require('method-override');
 const flash = require('connect-flash');
 const bodyParser = require('body-parser');
+const passport = require('passport');
 const mongoose = require('mongoose');
 
 const app = express();
@@ -15,6 +16,11 @@ const app = express();
 const mainRoutes = require('./routes/main');
 const ideasRoutes = require('./routes/ideas');
 const usersRoutes = require('./routes/users');
+
+///////////////////////////////
+// Passport config
+//////////////////////////////
+require('./config/passport')(passport);
 
 ///////////////////////////////
 // Database
@@ -60,6 +66,10 @@ app.use(
   })
 );
 
+// Passport Middleware
+app.use(passport.initialize());
+app.use(passport.session());
+
 // Connect flash middleware
 app.use(flash());
 
@@ -68,6 +78,7 @@ app.use((req, res, next) => {
   res.locals.success_msg = req.flash('success_msg');
   res.locals.error_msg = req.flash('error_msg');
   res.locals.error = req.flash('error');
+  res.locals.user = req.user || null;
   next();
 });
 
